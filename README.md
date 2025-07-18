@@ -1,5 +1,6 @@
-__测试中 TESTING__
+__开发中 DEVELOPING__
 
 # RePKG-GUI
-以python搭建的GUI面板
-require ：repkg.exe
+基于 [notscuffed/repkg](https://github.com/notscuffed/repkg) 的二开项目。
+使用 python 的 tkinter库 进行构建
+## 如何使用？
