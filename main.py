@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
+from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR, CONTACT
 
 if __name__=="__main__":
     root = tk.Tk()
@@ -33,14 +33,19 @@ if __name__=="__main__":
     info.pack(fill=tk.BOTH, expand=True)
     notebook.add(info, text="信息")
 
-    #3# PKG/TEX INFO
+    #4# SETTINGS
+    settings = ttk.Frame(notebook)
+    settings.pack(fill=tk.BOTH, expand=True)
+    notebook.add(settings, text="设置")
+
+    #3# HELP
     help = ttk.Frame(notebook)
     help.pack(fill=tk.BOTH, expand=True)
     notebook.add(help, text="帮助")
 
-    #3# PKG/TEX INFO
-    contact = ttk.Frame(notebook)
-    contact.pack(fill=tk.BOTH, expand=True)
+    #3# CONTACT
+    contact = CONTACT(notebook, AUTHOR_NAME="invictus", AUTHOR_EMAIL="invictus_star@outlook.com")
+    contact.grid(row=0, column=0, sticky=tk.NSEW)
     notebook.add(contact, text="联系作者")
 
     root.mainloop()

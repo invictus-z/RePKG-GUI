@@ -3,15 +3,15 @@ from . import FILE_FRAME, ARGS_FRAME
 from PIL import Image, ImageTk
 import subprocess
 
-class EXTRACTOR():
+class EXTRACTOR(ttk.Frame):
     def __init__(self, N):
-        self.frame = ttk.Frame(N)
-        self.frame.grid_columnconfigure(0, weight=1)
+        super().__init__(N)
+        self.grid_columnconfigure(0, weight=1)
 
-        self.input_frame = INPUT_FRAME(self.frame, self.extractor_exec)
+        self.input_frame = INPUT_FRAME(self, self.extractor_exec)
         self.input_frame.frame.grid(row=0, column=0, sticky=tk.EW)
 
-        self.output_frame = OUTPUT_FRAME(self.frame)
+        self.output_frame = OUTPUT_FRAME(self)
         self.output_frame.frame.grid(row=1, column=0, sticky=tk.EW)
 
     def extractor_exec(self): # 回调执行
@@ -34,32 +34,32 @@ class EXTRACTOR():
         except Exception as e:
             print(f"发生未知错误：{e}")
 
-class INPUT_FRAME():
+class INPUT_FRAME(ttk.Frame):
     """ 输入框架 """
     def __init__(self, F, callback_exec=None):
-        self.frame = ttk.Frame(F)
-        self.frame.grid_columnconfigure(0, weight=1)
+        super().__init__(F)
+        self.grid_columnconfigure(0, weight=1)
         self.callback_exec = callback_exec
 
-        self.file_frame = FILE_FRAME(self.frame, self.change_result_label)
+        self.file_frame = FILE_FRAME(self, self.change_result_label)
         self.file_frame.frame.grid(row=0, column=0, sticky=tk.EW)
 
-        self.args_frame = ARGS_FRAME(self.frame)
+        self.args_frame = ARGS_FRAME(self)
         self.args_frame.frame.grid(row=1, column=0, sticky=tk.EW)
 
-        self.result_label = tk.Label(self.frame, text="WARNING: 你还未选择pkg文件")
+        self.result_label = tk.Label(self, text="WARNING: 你还未选择pkg文件")
         self.result_label.grid(
             row=2, column=0, 
             sticky=tk.W,
             padx=(10, 0)
         )
-        self.command_label = tk.Label(self.frame, text="执行语句：")
+        self.command_label = tk.Label(self, text="执行语句：")
         self.command_label.grid(
             row=2, column=0, 
             sticky=tk.W,
             padx=(10, 0)
         )
-        tk.Button(self.frame, text="提取", command=self.on_button_click).grid(
+        tk.Button(self, text="提取", command=self.on_button_click).grid(
             row=2, column=1, 
             sticky=tk.E
         )
@@ -77,14 +77,14 @@ class INPUT_FRAME():
         self.command_label.config(text=f"执行语句：{' '.join(self.command)}")
 
 # 输出框架
-class OUTPUT_FRAME():
+class OUTPUT_FRAME(ttk.Frame):
     def __init__(self, F):
-        self.frame = ttk.Frame(F)
-        tk.Label(self.frame, text="预览显示:").grid(
+        super().__init__(F)
+        tk.Label(self, text="预览显示:").grid(
             row=0, column=0,
             sticky=tk.W
         )
-        tk.Button(self.frame, text="在文件夹中打开").grid(
+        tk.Button(self, text="在文件夹中打开").grid(
             row=0, column=1,
             sticky=tk.E
         )
@@ -92,7 +92,7 @@ class OUTPUT_FRAME():
     def show_image(self):
         # 图片预览显示
         image = ImageTk.PhotoImage(Image.open("temp\\test.png").resize((800,400)))
-        label = tk.Label(self.frame, image=image)
+        label = tk.Label(self, image=image)
         label.image = image  # 保持对图片的引用，避免被垃圾回收
         label.grid(
             row=1, column=0
@@ -104,7 +104,7 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
     def __init__(self, N):
         super().__init__(N)
         self.input_frame.file_frame.label.config(text="选择PKG文件:")
-        N.add(self.frame, text="Single Extract")
+        N.add(self, text="Single Extract")
 
         # 改写命令行语句
 
@@ -112,6 +112,6 @@ class MULTI_EXTRACTOR(EXTRACTOR):
     def __init__(self, N):
         super().__init__(N)
         self.input_frame.file_frame.label.config(text="选择文件夹:")
-        N.add(self.frame, text="Multi Extract")
+        N.add(self, text="Multi Extract")
 
         # 改写命令行语句

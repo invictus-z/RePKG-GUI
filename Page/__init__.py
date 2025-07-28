@@ -27,3 +27,4 @@ from .subFrame import FILE_FRAME, ARGS_FRAME
 from .EXTRACTOR import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
 # from .CONVERTOR import
 # from INFO import
+from .CONTACT import CONTACT
