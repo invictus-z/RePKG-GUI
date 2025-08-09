@@ -9,13 +9,13 @@ class FILE_FRAME(ttk.Frame):
         self.callback_ChangeLabel = callback_ChangeLabel
 
         self.label = tk.Label(self)
-        self.label.grid(      # 计划完成拖动处理
+        self.label.grid(      ### 计划完成拖动处理
             row=0, column=0,
             sticky=tk.W,
             padx=(0, 10)
         )
-        self.filename = tk.Entry(self) ######
-        self.filename.grid(
+        self.input_filename = tk.Entry(self) ### 拖动处理
+        self.input_filename.grid(
             row=0, column=1,
             sticky=tk.EW,
             padx=(0, 10)
@@ -24,6 +24,8 @@ class FILE_FRAME(ttk.Frame):
             row=0, column=2,
             sticky=tk.E
         )
+    
     def check_input_filename(self):
-        # check input
-        self.callback_ChangeLabel(f"你选择了{self.filename}")
+        if self.input_filename:
+            # check input
+            self.callback_ChangeLabel(f"你选择了{self.input_filename}")

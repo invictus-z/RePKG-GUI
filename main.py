@@ -20,9 +20,6 @@ if __name__=="__main__":
     single_extractor_frame = SINGLE_EXTRACTOR(extractor)
     multi_extractor_frame = MULTI_EXTRACTOR(extractor)
 
-    # 检测rePKG是否存在 & repkg info --version
-    # 多态调用rePKG.exe
-
     #2# PKG/TEX CONVERTOR
     convertor = ttk.Notebook(notebook)
     convertor.pack(fill=tk.BOTH, expand=True)
@@ -45,7 +42,7 @@ if __name__=="__main__":
 
     #3# CONTACT
     contact = CONTACT(notebook, AUTHOR_NAME="invictus", AUTHOR_EMAIL="invictus_star@outlook.com")
-    contact.grid(row=0, column=0, sticky=tk.NSEW)
+    contact.pack(fill=tk.BOTH, expand=True)
     notebook.add(contact, text="联系作者")
 
     root.mainloop()
