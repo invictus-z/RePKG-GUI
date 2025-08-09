@@ -2,11 +2,12 @@ from . import tk, ttk
 
 class FILE_FRAME(ttk.Frame):
     """ 文件选取框架 """
-    def __init__(self, F, callback_ChangeLabel):
+    def __init__(self, F, callback_ChangeLabel, callback_FormCommand):
         super().__init__(F)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.callback_ChangeLabel = callback_ChangeLabel
+        self.callback_FormCommand = callback_FormCommand
 
         self.label = tk.Label(self)
         self.label.grid(      ### 计划完成拖动处理
@@ -29,3 +30,4 @@ class FILE_FRAME(ttk.Frame):
         if self.input_filename:
             # check input
             self.callback_ChangeLabel(f"你选择了{self.input_filename}")
+            self.callback_FormCommand("input_filename", self.input_filename.get())
