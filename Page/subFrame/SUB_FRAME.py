@@ -1,75 +1,95 @@
 from . import tk, ttk
 from . import FILE_FRAME, ARGS_FRAME
 from PIL import Image, ImageTk
-import subprocess
 
 class INPUT_FRAME(ttk.Frame):
     """ 输入框架 """
-    def __init__(self, F, callback_exec=None):
+    def __init__(self, F, choices, callback_exec, callback_FormCommand, Itype, file_types):
         super().__init__(F)
-        self.grid_columnconfigure(0, weight=1)
         self.callback_exec = callback_exec
+        self.choices = choices
+        self.error = ""
 
-        self.file_frame = FILE_FRAME(self, self.change_result_label, self.form_command)
+        self.create_widgets(callback_FormCommand, Itype, file_types)
+        
+    def create_widgets(self, callback_FormCommand, Itype, file_types):
+        # 文件帧
+        self.file_frame = FILE_FRAME(self, callback_FormCommand, Itype, file_types)
         self.file_frame.grid(row=0, column=0, sticky=tk.EW)
 
-        self.choices = [
-            ["将所有提取的文件放在一个目录中", "--singledir", tk.BooleanVar()],
-            ["使用 project.json 中的名称作为项目子文件夹名", "--usename", tk.BooleanVar()],
-            ["提取 PKG 时不将 TEX 文件转换为图片", "--no-tex-convert", tk.BooleanVar()]
-        ]
-        self.command = [".\\rePKG extract","","",""]
-        self.command_label = tk.Label(self, text="执行语句：")
-        self.args_frame = ARGS_FRAME(self, self.choices, self.form_command)
+        # 参数帧
+        self.args_frame = ARGS_FRAME(self, self.choices, callback_FormCommand)
         self.args_frame.grid(row=1, column=0, sticky=tk.EW)
 
-        self.result_label = tk.Label(self, text="WARNING: 你还未选择pkg文件")
-        self.result_label.grid(
+        ttk.Separator(self, orient="horizontal").grid(
             row=2, column=0, 
-            sticky=tk.W,
-            padx=(10, 0)
+            sticky="ew", padx=10, pady=5
         )
+
+        # 回显帧
+        self.info_frame = ttk.Frame(self)
+        self.info_frame.grid(row=3, column=0, sticky=tk.EW)
+
+        # 命令行回显
+        self.command_label = ttk.Label(self.info_frame, text="执行语句：")
         self.command_label.grid(
-            row=3, column=0, 
+            row=0, column=0, 
             sticky=tk.W,
             padx=(10, 0)
         )
-        tk.Button(self, text="提取", command=self.on_button_click).grid(
-            row=2, column=1, 
-            sticky=tk.E
+        # 预警信息提示
+        self.error_label = ttk.Label(self.info_frame, text="")
+        self.error_label.grid(
+            row=1, column=0,
+            sticky=tk.W,
+            padx=(10, 0)
         )
+        self.grid_rowconfigure(1, weight=1)
+
+        # 按钮
+        self.btn = ttk.Button(self, text="提取", command=self.on_button_click)
+        self.btn.grid(
+            row=4, column=0, 
+            sticky=tk.EW
+        )
+
+        self.grid_columnconfigure(0, weight=1)
 
     def on_button_click(self):
         pass
-        # self.callback_exec()
+        # self.callback_exec() 测试阶段 暂时跳过
 
-    def change_result_label(self, text):
-        self.result_label.config(text=text)
+    def change_error_label(self, type, text):    
+        if type == "add":
+            if text not in self.error:
+                if self.error:
+                    self.error += " " + text
+                else:
+                    self.error = text
+        elif type == "remove":
+            self.error = self.error.replace(f" {text}", "").replace(text, "")
+        self.error_label.config(text=self.error)
 
-    def form_command(self, type, extra=""):
-        if type == "input_filename":
-            pass
-        elif type == "output_folder":
-            self.command[2]="-o " + extra
-        elif type == "choices":
-            for choice in self.choices:
-                args = ""
-                if choice[2].get():
-                    args+=choice[1]
-                self.command[3] = args[:-1]
-        self.command_label.config(text=f"执行语句：{' '.join(self.command)}") # 回调
+        if not self.error:
+            self.btn.configure(state=tk.DISABLED)
+        else:
+            self.btn.configure(state=tk.NORMAL)
 
 # 输出框架
 class OUTPUT_FRAME(ttk.Frame):
-    def __init__(self, F):
+    def __init__(self, F, callback_OpenFolder):
         super().__init__(F)
-        tk.Label(self, text="预览显示:").grid(
+
+        self.create_widgets(callback_OpenFolder)
+
+    def create_widgets(self, callback_OpenFolder):
+        ttk.Button(self, text="预览显示").grid(
             row=0, column=0,
-            sticky=tk.W
+            sticky=tk.W,
         )
-        tk.Button(self, text="在文件夹中打开").grid(
+        ttk.Button(self, text="在文件夹中打开", command=callback_OpenFolder).grid(
             row=0, column=1,
-            sticky=tk.E
+            sticky=tk.E,
         )
     
     def show_image(self, pid):

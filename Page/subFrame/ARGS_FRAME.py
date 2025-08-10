@@ -1,14 +1,18 @@
-from . import tk, ttk
+from . import tk, ttk, filedialog
 
 class ARGS_FRAME(ttk.Frame):
     """ 参数框架 """
     def __init__(self, F, choices, callback_FormCommand):
         super().__init__(F)
-        self.grid_columnconfigure(0, weight=1)
         
+        self.create_widgets(choices, callback_FormCommand)
+        
+    def create_widgets(self, choices, callback_FormCommand):
+        # 输出位置
         self.entry_frame = ARGS_ENTRY_FRAME(self, callback_FormCommand)
         self.entry_frame.grid(row=0, column=0, sticky=tk.EW)
 
+        # 参数指定
         self.choice_frame = ARGS_CHOICES_FRAME(
             self,
             choices,
@@ -16,45 +20,70 @@ class ARGS_FRAME(ttk.Frame):
         )
         self.choice_frame.grid(row=1, column=0, sticky=tk.EW)
 
+        self.grid_columnconfigure(0, weight=1)
+
 class ARGS_ENTRY_FRAME(ttk.Frame):
     """ 文本框指定参数 """
     def __init__(self, F, callback_FormCommand):
         super().__init__(F)
-        self.grid_columnconfigure(1, weight=1)
         self.callback_FormCommand=callback_FormCommand
 
-        tk.Label(self, text="选择输出路径:（默认为./output）").grid(  # 自定义输出路径
-            row=0, column=0,
-            sticky=tk.W,
-            padx=(0, 10)
-        )
-        self.output_folder=tk.Entry(self)
-        self.output_folder.grid(
-            row=0, column=1,
-            sticky=tk.EW,
-            padx=(0, 10)
-        )
-        tk.Button(self, text="选择", command=self.check_output_folder).grid(
-            row=0, column=2,
-            sticky=tk.E
-        )
+        self.create_widgets()
     
-    def check_output_folder(self):
-        # check
-        self.callback_FormCommand("output_folder", self.output_folder.get())
+    def create_widgets(self):
+        # 标签
+        ttk.Label(self, text="选择输出路径:（默认为./output）").grid(
+            row=0, column=0, padx=(0, 10), sticky=tk.W
+        )
+        
+        # 输入框
+        self.output_folder = tk.StringVar()
+        self.output_folder.set("./output") # 默认值为 ./output
+        self.path_entry = ttk.Entry(
+            self, 
+            textvariable=self.output_folder,
+            width=50
+        )
+        self.path_entry.grid(
+            row=0, column=1, padx=(0, 10), sticky=tk.EW
+        )
+        
+        # 选择按钮
+        ttk.Button(
+            self, 
+            text="浏览...",
+            command=self.select_folder
+        ).grid(
+            row=0, column=2, sticky=tk.W
+        )
+        
+        self.grid_columnconfigure(1, weight=1)
+        
+    def select_folder(self):
+        folder_path = filedialog.askdirectory(
+            title="选择文件夹",
+            mustexist=True  # 确保选择的是已存在的文件夹
+        )
+        
+        if folder_path:
+            self.output_folder.set(folder_path)
+            self.callback_FormCommand("output_folder",folder_path)               
 
 class ARGS_CHOICES_FRAME(ttk.Frame):
     """ 复选框指定参数 """
     def __init__(self, F, choices, callback_FormCommand): # choices:[[choice,arg,tk.BooleanVar()]]
         super().__init__(F)
-        self.grid_columnconfigure(1, weight=1)
 
+        self.create_widgets(choices, callback_FormCommand)
+
+    def create_widgets(self, choices, callback_FormCommand):
+        # 参数选择按钮
         for index, choice in enumerate(choices):
             tk.Checkbutton(
                 self,
-                text=choice[0],
-                variable=choice[2],
-                command=lambda: callback_FormCommand("choices")
+                text=choice["text"],
+                variable=choice["var"],
+                command=lambda idx=index, ch=choice["var"]: callback_FormCommand("add_choices", idx) if ch.get() else callback_FormCommand("remove_choices", idx)
             ).grid(
                 row=index//2, column=index%2,
                 sticky=tk.W,

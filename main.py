@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR, CONTACT
+from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
+from Page import CONVERTOR
+from Page import CONTACT
 
 if __name__=="__main__":
     root = tk.Tk()
@@ -15,17 +17,21 @@ if __name__=="__main__":
     #1# PKG EXTRACTOR
     extractor = ttk.Notebook(notebook)
     extractor.pack(fill=tk.BOTH, expand=True)
-    notebook.add(extractor, text="提取")
+    notebook.add(extractor, text="提取器")
 
     single_extractor_frame = SINGLE_EXTRACTOR(extractor)
     multi_extractor_frame = MULTI_EXTRACTOR(extractor)
 
     #2# PKG/TEX CONVERTOR
-    convertor = ttk.Notebook(notebook)
+    convertor = CONVERTOR(notebook)
     convertor.pack(fill=tk.BOTH, expand=True)
-    notebook.add(convertor, text="转换")
+    notebook.add(convertor, text="转换器")
 
     #3# PKG/TEX INFO
+
+
+
+    
     info = ttk.Frame(notebook)
     info.pack(fill=tk.BOTH, expand=True)
     notebook.add(info, text="信息")
@@ -41,7 +47,11 @@ if __name__=="__main__":
     notebook.add(help, text="帮助")
 
     #3# CONTACT
-    contact = CONTACT(notebook, AUTHOR_NAME="invictus", AUTHOR_EMAIL="invictus_star@outlook.com")
+    contact = CONTACT(notebook, 
+        AUTHOR_NAME="invictus", 
+        AUTHOR_EMAIL="invictus_star@outlook.com",
+        text="开源地址 ：https://github.com/invictus-z/RePKG-GUI"
+    )
     contact.pack(fill=tk.BOTH, expand=True)
     notebook.add(contact, text="联系作者")
 

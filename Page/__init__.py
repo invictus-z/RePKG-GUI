@@ -20,7 +20,7 @@ info
 '''
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 
 
 ## 调用
@@ -28,6 +28,6 @@ from .subFrame import INPUT_FRAME, OUTPUT_FRAME
 
 ## 实现
 from .EXTRACTOR import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
-# from .CONVERTOR import
+from .CONVERTOR import CONVERTOR
 # from INFO import
 from .CONTACT import CONTACT

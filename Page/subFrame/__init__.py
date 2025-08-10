@@ -1,4 +1,4 @@
-from .. import tk, ttk
+from .. import tk, ttk, filedialog
 
 ## 实现
 from .FILE_FRAME import FILE_FRAME 
