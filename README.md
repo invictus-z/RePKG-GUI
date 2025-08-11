@@ -7,9 +7,10 @@ __开发中 DEV__
 # RePKG-GUI
 ## 简介
 基于 [notscuffed/repkg](https://github.com/notscuffed/repkg) 的图形化二开项目。
+
 使用 python 的 tkinter库 进行构建。具有较好的移植性和高可扩展性。
 
 ## 如何使用？
-下载repkg.exe至该文件夹下
+前往 [RePKG_GUI/release](https://github.com/invictus-z/RePKG-GUI/releases)下载并解压 同时复制repkg.exe至该文件夹下
 ## 版本记录
 v0.1.0-alpha 提取器内部测试版本
