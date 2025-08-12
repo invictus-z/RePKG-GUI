@@ -10,6 +10,8 @@ class CONVERTOR(ttk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         self.choices = []
+
+        self.command = [".\\RePKG convert"]
         self.input_frame = INPUT_FRAME(self, self.choices, self.convertor_exec, self.form_command,
             "file",[]
         )

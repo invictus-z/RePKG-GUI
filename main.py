@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
 from Page import CONVERTOR
+from Page import INFO
 from Page import CONTACT
 
 if __name__=="__main__":
@@ -27,12 +28,8 @@ if __name__=="__main__":
     convertor.pack(fill=tk.BOTH, expand=True)
     notebook.add(convertor, text="转换器")
 
-    #3# PKG/TEX INFO
-
-
-
-    
-    info = ttk.Frame(notebook)
+    #3# PKG/TEX INFO    
+    info = INFO(notebook)
     info.pack(fill=tk.BOTH, expand=True)
     notebook.add(info, text="信息")
 
@@ -44,7 +41,7 @@ if __name__=="__main__":
     #3# HELP
     help = ttk.Frame(notebook)
     help.pack(fill=tk.BOTH, expand=True)
-    notebook.add(help, text="帮助")
+    notebook.add(help, text="帮助")  #repkg版本检测
 
     #3# CONTACT
     contact = CONTACT(notebook, 
@@ -54,5 +51,25 @@ if __name__=="__main__":
     )
     contact.pack(fill=tk.BOTH, expand=True)
     notebook.add(contact, text="联系作者")
+
+
+    # 绑定事件
+    update_wrap_length = single_extractor_frame.input_frame.update_wrap_length
+
+    root.update_idletasks()
+
+    update_delay = None
+
+    def handle_configure(event):
+        global update_delay
+        if update_delay:
+            root.after_cancel(update_delay)
+        # 50ms后执行更新
+        update_delay = root.after(50, update_wrap_length, event)
+
+    root.bind("<Configure>", handle_configure)
+
+    initial_event = type('obj', (object,), {'width': root.winfo_width()})()
+    handle_configure(initial_event)
 
     root.mainloop()

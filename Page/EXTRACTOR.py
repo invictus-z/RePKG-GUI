@@ -23,10 +23,53 @@ class EXTRACTOR(ttk.Frame):
                 "text" : "提取 PKG 时不将 TEX 文件转换为图片",
                 "arg" : "--no-tex-convert",
                 "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "不提取指定扩展名文件",
+                "arg" : "--ignoreexts",
+                "ext_text" : "扩展名",
+                "ext" : {
+                    ".pkg":tk.BooleanVar(),
+                    ".tex":tk.BooleanVar()
+                },
+                "args" : "",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "只提取指定扩展名文件",
+                "arg" : "--onlyexts",
+                "ext_text" : "扩展名",
+                "ext" : {
+                    ".pkg":tk.BooleanVar(),
+                    ".tex":tk.BooleanVar()
+                },
+                "args" : "",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "提取特定文件夹中所有tex文件",
+                "arg" : "--tex",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "在指定目录中所有子目录中进行递归搜索",
+                "arg" : "--recursive",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "复制 project.json 和 preview.jpg 到输出目录",
+                "arg" : "--copyproject",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "覆盖已存在文件",
+                "arg" : "--overwrite",
+                "var" : tk.BooleanVar()
             }
         ]
         
-        self.command = [".\\rePKG extract","","",""]
+        self.command = [".\\RePKG extract","","","",""]
+        # 基础命令 输入文件（夹） 输出位置 参数 自定义参数
 
     def create_widgets(self, Itype, file_types):
         self.input_frame = INPUT_FRAME(self, self.choices, self.extractor_exec, self.form_command, Itype, file_types)
@@ -41,10 +84,10 @@ class EXTRACTOR(ttk.Frame):
     def extractor_exec(self):
         pass
 
-    def form_command(self, type, extra):
+    def form_command(self, type, extra): # 或者直接遍历实现（？
         if type == "input_file":
             self.command[1] = extra
-        elif type == "input_file":
+        elif type == "input_folder":
             self.command[1] = "-r" + extra
         elif type == "output_folder":
             self.command[2] = "-o \"" + extra + "\""
@@ -52,6 +95,22 @@ class EXTRACTOR(ttk.Frame):
             self.command[3] += self.choices[extra]["arg"] + " "
         elif type == "remove_choices":
             self.command[3] = self.command[3].replace(self.choices[extra]["arg"] + " ", "")
+        elif type == "pro_choices_with_ext":
+            self.command[4] = self.command[4].replace(self.choices[extra]["args"] + " ", "")
+            self.choices[extra]["args"] = self.choices[extra]["arg"]
+            for key, var in self.choices[extra]["ext"].items():
+                if var.get():
+                    self.choices[extra]["args"] += (" " + key[1:] + ",")
+            if self.choices[extra]["args"] != self.choices[extra]["arg"]:
+                self.choices[extra]["args"] = self.choices[extra]["args"][:-1]
+                self.command[4] += self.choices[extra]["args"] + " "
+        '''
+        elif type == "remove_choices_with_ext":
+            self.command[4] = self.command[4].replace(self.choices[extra]["args"], "")
+            for key, var in self.choices[extra]["ext"].items():
+                if var.get():
+                    self.choices[extra]["args"] = self.choices[extra]["args"].replace(" " + key, "")
+        '''
         self.input_frame.command_label.config(text=f"执行语句：{' '.join(self.command)}") # 回调
 
         if not self.command[1]:

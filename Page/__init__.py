@@ -29,5 +29,5 @@ from .subFrame import INPUT_FRAME, OUTPUT_FRAME
 ## 实现
 from .EXTRACTOR import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
 from .CONVERTOR import CONVERTOR
-# from INFO import
+from .INFO import INFO
 from .CONTACT import CONTACT
