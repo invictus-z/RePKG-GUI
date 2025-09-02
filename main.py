@@ -4,6 +4,7 @@ from tkinter import ttk
 from Page import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
 from Page import CONVERTOR
 from Page import INFO
+from Page import HELP
 from Page import CONTACT
 
 if __name__=="__main__":
@@ -39,9 +40,9 @@ if __name__=="__main__":
     notebook.add(settings, text="设置")
 
     #3# HELP
-    help = ttk.Frame(notebook)
+    help = HELP(notebook)
     help.pack(fill=tk.BOTH, expand=True)
-    notebook.add(help, text="帮助")  #repkg版本检测
+    notebook.add(help, text="帮助/使用说明")  #repkg版本检测
 
     #3# CONTACT
     contact = CONTACT(notebook, 

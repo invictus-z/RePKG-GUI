@@ -31,3 +31,4 @@ from .EXTRACTOR import SINGLE_EXTRACTOR, MULTI_EXTRACTOR
 from .CONVERTOR import CONVERTOR
 from .INFO import INFO
 from .CONTACT import CONTACT
+from .HELP import HELP

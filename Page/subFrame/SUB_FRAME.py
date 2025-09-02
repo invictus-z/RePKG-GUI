@@ -62,12 +62,12 @@ class INPUT_FRAME(ttk.LabelFrame):
             row=4, column=0, 
             sticky=tk.EW
         )
+        self.btn.configure(state=tk.DISABLED)
 
         self.grid_columnconfigure(0, weight=1)
 
     def on_button_click(self):
-        pass
-        # self.callback_exec() 测试阶段 暂时跳过
+        self.callback_exec()
 
     def change_error_label(self, type, text): # 错误标签更新
         if type == "add":
@@ -80,7 +80,7 @@ class INPUT_FRAME(ttk.LabelFrame):
             self.error = self.error.replace(f" {text}", "").replace(text, "")
         self.error_label.config(text=self.error)
 
-        if not self.error:
+        if self.error:
             self.btn.configure(state=tk.DISABLED)
         else:
             self.btn.configure(state=tk.NORMAL)

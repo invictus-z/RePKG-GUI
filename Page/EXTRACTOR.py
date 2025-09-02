@@ -7,66 +7,6 @@ import os, subprocess
 class EXTRACTOR(ttk.Frame):
     def __init__(self, N):
         super().__init__(N)
-
-        self.choices = [
-            {
-                "text" : "将所有提取的文件放在一个目录中", 
-                "arg" : "--singledir", 
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "使用 project.json 中的名称作为项目子文件夹名",
-                "arg" : "--usename",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "提取 PKG 时不将 TEX 文件转换为图片",
-                "arg" : "--no-tex-convert",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "不提取指定扩展名文件",
-                "arg" : "--ignoreexts",
-                "ext_text" : "扩展名",
-                "ext" : {
-                    ".pkg":tk.BooleanVar(),
-                    ".tex":tk.BooleanVar()
-                },
-                "args" : "",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "只提取指定扩展名文件",
-                "arg" : "--onlyexts",
-                "ext_text" : "扩展名",
-                "ext" : {
-                    ".pkg":tk.BooleanVar(),
-                    ".tex":tk.BooleanVar()
-                },
-                "args" : "",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "提取特定文件夹中所有tex文件",
-                "arg" : "--tex",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "在指定目录中所有子目录中进行递归搜索",
-                "arg" : "--recursive",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "复制 project.json 和 preview.jpg 到输出目录",
-                "arg" : "--copyproject",
-                "var" : tk.BooleanVar()
-            },
-            {
-                "text" : "覆盖已存在文件",
-                "arg" : "--overwrite",
-                "var" : tk.BooleanVar()
-            }
-        ]
         
         self.command = [".\\RePKG extract","","","",""]
         # 基础命令 输入文件（夹） 输出位置 参数 自定义参数
@@ -88,7 +28,7 @@ class EXTRACTOR(ttk.Frame):
         if type == "input_file":
             self.command[1] = extra
         elif type == "input_folder":
-            self.command[1] = "-r" + extra
+            self.command[1] = "-r " + extra
         elif type == "output_folder":
             self.command[2] = "-o \"" + extra + "\""
         elif type == "add_choices":
@@ -140,6 +80,10 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
     def __init__(self, N):
         super().__init__(N)
 
+        self.choices = [
+            
+        ]
+
         self.create_widgets(
             "file",
             [("pkg文件", "*.pkg")]
@@ -149,7 +93,7 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
         N.add(self, text="单文件提取")
 
     def extractor_exec(self):
-        # 维护一个参数列表 self.input_frame.        
+        print(f"执行语句：{' '.join(self.command)}")
         '''
         try:
             # example
@@ -175,6 +119,70 @@ class MULTI_EXTRACTOR(EXTRACTOR):
     def __init__(self, N):
         super().__init__(N)
 
+        self.choices = [
+            {
+                "text" : "将所有提取的文件放在一个目录中", 
+                "arg" : "--singledir", 
+                "var" : tk.BooleanVar()
+            },  ## AK
+            {
+                "text" : "使用 project.json 中的名称作为项目子文件夹名",
+                "arg" : "--usename",
+                "var" : tk.BooleanVar()
+            },  ## AK
+            {
+                "text" : "提取 PKG 时不将 TEX 文件转换为图片",
+                "arg" : "--no-tex-convert",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "不提取指定扩展名文件",
+                "arg" : "--ignoreexts",
+                "ext_text" : "扩展名",
+                "ext" : {
+                    ".pkg":tk.BooleanVar(),
+                    ".tex":tk.BooleanVar()
+                },
+                "args" : "",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "只提取指定扩展名文件",
+                "arg" : "--onlyexts",
+                "ext_text" : "扩展名",
+                "ext" : {
+                    ".pkg":tk.BooleanVar(),
+                    ".tex":tk.BooleanVar()
+                },
+                "args" : "",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "提取特定文件夹中所有tex文件",
+                "arg" : "--tex",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "复制 project.json 和 preview.jpg 到输出目录",
+                "arg" : "--copyproject",
+                "var" : tk.BooleanVar()
+            },
+            {
+                "text" : "覆盖已存在文件",
+                "arg" : "--overwrite",
+                "var" : tk.BooleanVar()
+            }
+        ]
+
+        '''
+        {
+                "text" : "在指定目录中所有子目录中进行递归搜索",
+                "arg" : "--recursive",
+                "var" : tk.BooleanVar()
+            },
+        == '-r' 
+        '''
+
         self.create_widgets(
             "folder",
             []
@@ -185,4 +193,4 @@ class MULTI_EXTRACTOR(EXTRACTOR):
 
         # 改写命令行语句
     def extractor_exec(self):
-        pass
+        print(f"执行语句：{' '.join(self.command)}")
