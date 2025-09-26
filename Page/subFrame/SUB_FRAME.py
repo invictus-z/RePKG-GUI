@@ -9,6 +9,7 @@ class INPUT_FRAME(ttk.LabelFrame):
         self.callback_exec = callback_exec
         self.choices = choices
         self.error = ""
+        self.warning = ""
 
         self.create_widgets(callback_FormCommand, Itype, file_types)
         
@@ -43,13 +44,13 @@ class INPUT_FRAME(ttk.LabelFrame):
             padx=(10, 0)
         )
         # 预警信息提示
-        self.error_label = ttk.Label(
+        self.risk_label = ttk.Label(
             self.info_frame, 
             text="",
             wraplength=0,
             justify="left"
         )
-        self.error_label.grid(
+        self.risk_label.grid(
             row=1, column=0,
             sticky=tk.W,
             padx=(10, 0)
@@ -67,18 +68,27 @@ class INPUT_FRAME(ttk.LabelFrame):
         self.grid_columnconfigure(0, weight=1)
 
     def on_button_click(self):
+        self.change_risk_label("remove", "WARNING")
         self.callback_exec()
 
-    def change_error_label(self, type, text): # 错误标签更新
+    def change_risk_label(self, type, subtype, text=""): # 风险标签更新
         if type == "add":
-            if text not in self.error:
-                if self.error:
-                    self.error += " " + text
+            if subtype == "WARNING":
+                if self.warning:
+                    self.warning += " " + subtype + ":" + text
                 else:
-                    self.error = text
+                    self.warning = subtype + ":" + text
+            elif subtype == "ERROR" and text not in self.error:
+                if self.error:
+                    self.error += " " + subtype + ":" + text
+                else:
+                    self.error = subtype + ":" + text
         elif type == "remove":
-            self.error = self.error.replace(f" {text}", "").replace(text, "")
-        self.error_label.config(text=self.error)
+            if subtype == "WARNING":
+                self.warning = ""
+            elif subtype == "ERROR" and text in self.error:
+                self.error = self.error.replace(f" {text}", "").replace(text, "")
+        self.risk_label.config(text=self.error + self.warning)
 
         if self.error:
             self.btn.configure(state=tk.DISABLED)
@@ -89,17 +99,21 @@ class INPUT_FRAME(ttk.LabelFrame):
         new_width = event.width
 
         self.command_label.config(wraplength=new_width)
-        self.error_label.config(wraplength=new_width)
+        self.risk_label.config(wraplength=new_width)
 
 # 输出框架
 class OUTPUT_FRAME(ttk.Frame):
-    def __init__(self, F, callback_OpenFolder):
+    def __init__(self, F, callback_OpenFolder, callback_FindImage):
         super().__init__(F)
 
-        self.create_widgets(callback_OpenFolder)
+        self.create_widgets(callback_OpenFolder, callback_FindImage)
 
-    def create_widgets(self, callback_OpenFolder):
-        self.btn_show = ttk.Button(self, text="预览显示")
+    def create_widgets(self, callback_OpenFolder, callback_FindImage):
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=0)
+        self.grid_columnconfigure(2, weight=1)
+
+        self.btn_show = ttk.Button(self, text="预览显示", command=callback_FindImage)
         self.btn_show.grid(
             row=0, column=0,
             sticky=tk.W,
@@ -107,14 +121,16 @@ class OUTPUT_FRAME(ttk.Frame):
         self.btn_openfolder = ttk.Button(self, text="在文件夹中打开", command=callback_OpenFolder)
         self.btn_openfolder.grid(
             row=0, column=1,
-            sticky=tk.E,
+            sticky=tk.W,
         )
     
-    def show_image(self, pid):
-        # 图片预览显示
-        image = ImageTk.PhotoImage(Image.open("temp\\test.png").resize((800,400)))
-        label = tk.Label(self, image=image)
-        label.image = image  # 保持对图片的引用，避免被垃圾回收
+    def show_image(self, files, height=400):
+        image = Image.open(files[0])
+        width = int( image.size[0] / image.size[1] * height )
+        imagetk = ImageTk.PhotoImage(image.resize((width, height)))
+        label = tk.Label(self, image=imagetk)
+        label.image = imagetk  # 保持对图片的引用，避免被垃圾回收
         label.grid(
-            row=1, column=0
+            row=1, column=0, columnspan=3,
+            sticky="nsew"
         )

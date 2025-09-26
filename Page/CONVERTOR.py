@@ -18,7 +18,7 @@ class CONVERTOR(ttk.Frame):
         self.input_frame.grid(row=0, column=0, sticky=tk.EW)
         self.input_frame.file_frame.label.config(text="选择PKG文件:")
 
-        self.output_frame = OUTPUT_FRAME(self, None)
+        self.output_frame = OUTPUT_FRAME(self, None, None)
         self.output_frame.grid(row=1, column=0, sticky=tk.EW)
 
         self.args = []

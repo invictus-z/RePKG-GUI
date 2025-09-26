@@ -7,6 +7,8 @@ import os, subprocess
 class EXTRACTOR(ttk.Frame):
     def __init__(self, N):
         super().__init__(N)
+
+        self.output_folder = "flag{invictus}"
         
         self.command = [".\\RePKG extract","","","",""]
         # 基础命令 输入文件（夹） 输出位置 参数 自定义参数
@@ -15,14 +17,14 @@ class EXTRACTOR(ttk.Frame):
         self.input_frame = INPUT_FRAME(self, self.choices, self.extractor_exec, self.form_command, Itype, file_types)
         self.input_frame.grid(row=0, column=0, sticky=tk.EW)
 
-        self.output_frame = OUTPUT_FRAME(self, self.open_folder)
+        self.output_frame = OUTPUT_FRAME(self, self.open_folder, self.find_image)
         self.output_frame.grid(row=1, column=0, sticky=tk.EW)
 
         self.grid_columnconfigure(0, weight=1)
 
     @abstractmethod
     def extractor_exec(self):
-        pass
+        self.output_folder = self.command[2][4:-1] if self.command[2].startswith("-o ") else "output"
 
     def form_command(self, type, extra): # 或者直接遍历实现（？
         if type == "input_file":
@@ -54,15 +56,19 @@ class EXTRACTOR(ttk.Frame):
         self.input_frame.command_label.config(text=f"执行语句：{' '.join(self.command)}") # 回调
 
         if not self.command[1]:
-            self.input_frame.change_error_label("add", "WARNING: 你还未选择pkg文件")
+            self.input_frame.change_risk_label("add", "ERROR", "你还未选择pkg文件")
         else:
-            self.input_frame.change_error_label("remove", "WARNING: 你还未选择pkg文件")
+            self.input_frame.change_risk_label("remove", "ERROR", "你还未选择pkg文件")
 
     def open_folder(self):
-        path = self.command[2][4:-1] if self.command[2].startswith("-o ") else "./output"
+        path = self.output_folder
+        if path == "flag{invictus}":
+            self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
+            return None
+        
         if not os.path.exists(path):
-            self.input_frame.change_error_label("add","WARNING: 路径不存在")
-            return
+            self.input_frame.change_risk_label("add","WARNING", "路径不存在")
+            return None
             
         try:
             if os.name == 'nt':  # Windows
@@ -73,7 +79,10 @@ class EXTRACTOR(ttk.Frame):
                 subprocess.run(['xdg-open', path])
         except Exception as e:
             print(f"打开失败：{e}")
-
+    
+    @abstractmethod
+    def find_image(self):
+        pass
 
 # 继承EXTRACTOR的两个子类构建选项卡的两部分
 class SINGLE_EXTRACTOR(EXTRACTOR):
@@ -93,10 +102,11 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
         N.add(self, text="单文件提取")
 
     def extractor_exec(self):
+        super().extractor_exec()
+
         print(f"执行语句：{' '.join(self.command)}")
-        '''
+        
         try:
-            # example
             result = subprocess.run(
                 ' '.join(self.command),
                 capture_output=True,
@@ -112,8 +122,30 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
         except Exception as e:
             print(f"发生未知错误：{e}")
 
-        删除临时文件
-        '''
+    def find_image(self):
+        path = self.output_folder
+        if path == "flag{invictus}":
+            self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
+            return None
+        path = os.path.join(path, "materials")
+
+        image_extensions = (".png", ".jpg", ".jpeg", ".PNG", ".JPG", ".JPEG")
+        abs_path = os.path.abspath(path)
+
+        if not os.path.isdir(abs_path):
+            self.input_frame.change_risk_label("add","WARNING", "输出路径不存在")
+            return None
+        
+        image_paths = []
+        for filename in os.listdir(abs_path):
+            file_path = os.path.join(abs_path, filename)
+            if os.path.isfile(file_path) and filename.endswith(image_extensions):
+                image_paths.append(file_path)
+        
+        if image_paths:
+            return image_paths
+        else:
+            self.input_frame.change_risk_label("add","WARNING", "图片不存在")
 
 class MULTI_EXTRACTOR(EXTRACTOR):
     def __init__(self, N):
@@ -193,4 +225,29 @@ class MULTI_EXTRACTOR(EXTRACTOR):
 
         # 改写命令行语句
     def extractor_exec(self):
+        super().extractor_exec()
+
         print(f"执行语句：{' '.join(self.command)}")
+
+        try:
+            result = subprocess.run(
+                ' '.join(self.command),
+                capture_output=True,
+                text=True,   
+                check=True      
+            )
+            print("命令输出：")
+            print(result.stdout)
+        except subprocess.CalledProcessError as e:
+            print(f"命令执行失败：{e.stderr}")
+        except FileNotFoundError:
+            print("错误：找不到该命令")
+        except Exception as e:
+            print(f"发生未知错误：{e}")
+
+    def find_image(self):
+        path = self.output_folder
+        if path == "flag{invictus}":
+            self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
+            return None
+        pass # 待实现

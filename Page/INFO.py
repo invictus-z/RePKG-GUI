@@ -70,7 +70,7 @@ class INFO(ttk.Frame):
         self.input_frame = INPUT_FRAME(self, self.choices, self.extractor_exec, self.form_command, Itype, file_types)
         self.input_frame.grid(row=0, column=0, sticky=tk.EW)
 
-        self.output_frame = OUTPUT_FRAME(self, None)
+        self.output_frame = OUTPUT_FRAME(self, None, None)
         self.output_frame.grid(row=1, column=0, sticky=tk.EW)
 
         self.grid_columnconfigure(0, weight=1)
@@ -110,6 +110,6 @@ class INFO(ttk.Frame):
         self.input_frame.command_label.config(text=f"执行语句：{' '.join(self.command)}") # 回调
 
         if not self.command[1]:
-            self.input_frame.change_error_label("add", "WARNING: 你还未选择pkg文件")
+            self.input_frame.change_risk_label("add", "ERROR", "你还未选择pkg文件")
         else:
-            self.input_frame.change_error_label("remove", "WARNING: 你还未选择pkg文件")
+            self.input_frame.change_risk_label("remove", "ERROR", "你还未选择pkg文件")
