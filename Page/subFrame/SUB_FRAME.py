@@ -1,6 +1,7 @@
 from . import tk, ttk
 from . import FILE_FRAME, ARGS_FRAME
 from PIL import Image, ImageTk
+import os
 
 class INPUT_FRAME(ttk.LabelFrame):
     """ 输入框架 """
@@ -106,31 +107,89 @@ class OUTPUT_FRAME(ttk.Frame):
     def __init__(self, F, callback_OpenFolder, callback_FindImage):
         super().__init__(F)
 
+        self.n = 0 # 当前显示第n张图片
+        self.images_num = 0
+        self.images = [] # 图片路径序列
+
         self.create_widgets(callback_OpenFolder, callback_FindImage)
 
     def create_widgets(self, callback_OpenFolder, callback_FindImage):
-        self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
 
-        self.btn_show = ttk.Button(self, text="预览显示", command=callback_FindImage)
+        self.btn_show = ttk.Button(self, text="图片预览显示", command=callback_FindImage)
         self.btn_show.grid(
-            row=0, column=0,
+            row=0, column=1,
             sticky=tk.W,
         )
         self.btn_openfolder = ttk.Button(self, text="在文件夹中打开", command=callback_OpenFolder)
         self.btn_openfolder.grid(
-            row=0, column=1,
+            row=0, column=0,
             sticky=tk.W,
         )
     
     def show_image(self, files, height=400):
-        image = Image.open(files[0])
+        self.images = files
+        self.images_num = len(files)
+
+        self.create_images_widgets()
+
+        self.change_image(0) # 初始化
+
+    def create_images_widgets(self):
+        frames = tk.Frame(self)
+        frames.grid(
+            row=1, column=0, columnspan=3,
+            sticky=tk.NSEW
+        )
+        frames.grid_columnconfigure(2, weight=1)
+
+        self.numlabel = tk.Label(frames)
+        self.numlabel.grid(
+            row=0, column=0,
+            sticky=tk.W
+        )
+        self.namelabel = tk.Label(frames)
+        self.namelabel.grid(
+            row=0, column=2, columnspan=2,
+            sticky=tk.W
+        )
+        self.btn_prev = ttk.Button(frames, text="<", command=lambda: self.change_image(-1))
+        self.btn_prev.grid(
+            row=0, column=3,
+            sticky=tk.W,
+        )
+        self.btn_next = ttk.Button(frames, text=">", command=lambda: self.change_image(+1))
+        self.btn_next.grid(
+            row=0, column=4,
+            sticky=tk.W,
+        )
+        ttk.Button(frames, text="保存图片", command=self.save_image).grid(
+            row=0, column=5,
+            sticky=tk.E,
+        )
+        self.imagelabel = tk.Label(frames)
+        self.imagelabel.grid(
+            row=1, column=0, columnspan=6,
+            sticky=tk.NSEW
+        )
+        
+    def change_image(self, delta, height=400):
+        self.n += delta
+        if self.n == 0:
+            self.btn_prev.config(state=tk.DISABLED)
+        else:
+            self.btn_prev.config(state=tk.NORMAL)
+        if self.n == self.images_num - 1:
+            self.btn_next.config(state=tk.DISABLED)
+        else:
+            self.btn_next.config(state=tk.NORMAL)
+        image = Image.open(self.images[self.n])
         width = int( image.size[0] / image.size[1] * height )
         imagetk = ImageTk.PhotoImage(image.resize((width, height)))
-        label = tk.Label(self, image=imagetk)
-        label.image = imagetk  # 保持对图片的引用，避免被垃圾回收
-        label.grid(
-            row=1, column=0, columnspan=3,
-            sticky="nsew"
-        )
+        
+        self.imagelabel.config(image=imagetk)
+        self.namelabel.config(text=os.path.basename(self.images[self.n]))
+        self.numlabel.config(text=f"第{self.n+1}张/共{self.images_num}张")
+
+    def save_image():
+        pass # 待实现

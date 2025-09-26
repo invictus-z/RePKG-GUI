@@ -141,9 +141,10 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
             file_path = os.path.join(abs_path, filename)
             if os.path.isfile(file_path) and filename.endswith(image_extensions):
                 image_paths.append(file_path)
-        
+
+        print(image_paths)
         if image_paths:
-            return image_paths
+            self.output_frame.show_image(image_paths)
         else:
             self.input_frame.change_risk_label("add","WARNING", "图片不存在")
 
