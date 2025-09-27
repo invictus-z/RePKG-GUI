@@ -55,7 +55,8 @@ if __name__=="__main__":
 
 
     # 绑定事件
-    update_wrap_length = single_extractor_frame.input_frame.update_wrap_length
+    update_wrap_length0 = single_extractor_frame.input_frame.update_wrap_length
+    update_wrap_length1 = help.update_wrap_length
 
     root.update_idletasks()
 
@@ -66,7 +67,8 @@ if __name__=="__main__":
         if update_delay:
             root.after_cancel(update_delay)
         # 50ms后执行更新
-        update_delay = root.after(50, update_wrap_length, event)
+        update_delay = root.after(50, update_wrap_length0, event)
+        update_delay = root.after(50, update_wrap_length1, event)
 
     root.bind("<Configure>", handle_configure)
 

@@ -4,11 +4,13 @@ from . import INPUT_FRAME, OUTPUT_FRAME
 from abc import abstractmethod
 import os, subprocess
 
+INIT_PATH = "flag{invictus}"
+
 class EXTRACTOR(ttk.Frame):
     def __init__(self, N):
         super().__init__(N)
 
-        self.output_folder = "flag{invictus}"
+        self.output_folder = INIT_PATH
         
         self.command = [".\\RePKG extract","","","",""]
         # 基础命令 输入文件（夹） 输出位置 参数 自定义参数
@@ -27,6 +29,8 @@ class EXTRACTOR(ttk.Frame):
         self.output_folder = self.command[2][4:-1] if self.command[2].startswith("-o ") else "output"
 
     def form_command(self, type, extra): # 或者直接遍历实现（？
+        self.output_folder = INIT_PATH
+        
         if type == "input_file":
             self.command[1] = extra
         elif type == "input_folder":
@@ -62,7 +66,7 @@ class EXTRACTOR(ttk.Frame):
 
     def open_folder(self):
         path = self.output_folder
-        if path == "flag{invictus}":
+        if path == INIT_PATH:
             self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
             return None
         
@@ -124,7 +128,7 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
 
     def find_image(self):
         path = self.output_folder
-        if path == "flag{invictus}":
+        if path == INIT_PATH:
             self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
             return None
         path = os.path.join(path, "materials")
@@ -248,7 +252,7 @@ class MULTI_EXTRACTOR(EXTRACTOR):
 
     def find_image(self):
         path = self.output_folder
-        if path == "flag{invictus}":
+        if path == INIT_PATH:
             self.input_frame.change_risk_label("add","WARNING", "还未执行命令")
             return None
         pass # 待实现

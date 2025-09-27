@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 
 test.py
+out/
 
 RePKG.exe
 output/

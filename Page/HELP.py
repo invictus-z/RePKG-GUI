@@ -37,7 +37,12 @@ class HELP(ttk.Frame):
             sticky=tk.EW,
             padx=10, pady=10
         )
-        self.guide_text = ttk.Label(self.guide_frame, text="测试")
+        guide = """
+            1. 执行命令前请仔细核对执行语句，避免潜在的覆写可能。 
+
+            2. 图片预览显示功能是通过遍历目标文件夹下的图片实现，如果多次提取文件到相同的文件夹，可能会出现多张照片。（后续可能会推进更新）
+        """
+        self.guide_text = ttk.Label(self.guide_frame, text=guide)
         self.guide_text.grid(
             row=0, column=0,
             sticky=tk.W,
@@ -64,3 +69,8 @@ class HELP(ttk.Frame):
 
         except Exception as e:
             self.version_label.config(text=self.error_msg2.format(str(e)))
+
+    def update_wrap_length(self, event): # 根据窗口大小调整自动换行
+        new_width = event.width
+
+        self.guide_text.config(wraplength=new_width)
