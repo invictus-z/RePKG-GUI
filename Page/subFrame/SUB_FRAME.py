@@ -185,9 +185,9 @@ class OUTPUT_FRAME(ttk.Frame):
             self.btn_next.config(state=tk.NORMAL)
         image = Image.open(self.images[self.n])
         width = int( image.size[0] / image.size[1] * height )
-        imagetk = ImageTk.PhotoImage(image.resize((width, height)))
+        self.imagetk = ImageTk.PhotoImage(image.resize((width, height)))
         
-        self.imagelabel.config(image=imagetk)
+        self.imagelabel.config(image=self.imagetk)
         self.namelabel.config(text=os.path.basename(self.images[self.n]))
         self.numlabel.config(text=f"第{self.n+1}张/共{self.images_num}张")
 

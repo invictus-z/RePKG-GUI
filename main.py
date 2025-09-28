@@ -19,7 +19,7 @@ if __name__=="__main__":
     #1# PKG EXTRACTOR
     extractor = ttk.Notebook(notebook)
     extractor.pack(fill=tk.BOTH, expand=True)
-    notebook.add(extractor, text="提取器")
+    notebook.add(extractor, text="PKG提取")
 
     single_extractor_frame = SINGLE_EXTRACTOR(extractor)
     multi_extractor_frame = MULTI_EXTRACTOR(extractor)
@@ -27,24 +27,29 @@ if __name__=="__main__":
     #2# PKG/TEX CONVERTOR
     convertor = CONVERTOR(notebook)
     convertor.pack(fill=tk.BOTH, expand=True)
-    notebook.add(convertor, text="转换器")
+    notebook.add(convertor, text="文件转换")
 
     #3# PKG/TEX INFO    
     info = INFO(notebook)
     info.pack(fill=tk.BOTH, expand=True)
-    notebook.add(info, text="信息")
+    notebook.add(info, text="文件信息")
 
-    #4# SETTINGS
+    #4# LOG
+    log = ttk.Frame(notebook)
+    log.pack(fill=tk.BOTH, expand=True)
+    notebook.add(log, text="日志")
+
+    #5# SETTINGS
     settings = ttk.Frame(notebook)
     settings.pack(fill=tk.BOTH, expand=True)
-    notebook.add(settings, text="设置")
+    notebook.add(settings, text="设置") #可选是否执行日志记录（default开启）
 
-    #3# HELP
+    #6# HELP
     help = HELP(notebook)
     help.pack(fill=tk.BOTH, expand=True)
     notebook.add(help, text="帮助/使用说明")  #repkg版本检测
 
-    #3# CONTACT
+    #7# CONTACT
     contact = CONTACT(notebook, 
         AUTHOR_NAME="invictus", 
         AUTHOR_EMAIL="invictus_star@outlook.com",

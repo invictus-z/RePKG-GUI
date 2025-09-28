@@ -4,11 +4,16 @@ from . import INPUT_FRAME, OUTPUT_FRAME
 from abc import abstractmethod
 import os, subprocess
 
+from datetime import datetime
+
 INIT_PATH = "flag{invictus}"
 
 class EXTRACTOR(ttk.Frame):
     def __init__(self, N):
         super().__init__(N)
+
+        self.log_file = "logs/extractor_log.txt"
+        os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
 
         self.output_folder = INIT_PATH
         
@@ -74,15 +79,12 @@ class EXTRACTOR(ttk.Frame):
             self.input_frame.change_risk_label("add","WARNING", "路径不存在")
             return None
             
-        try:
-            if os.name == 'nt':  # Windows
-                os.startfile(path)
-            elif os.name == 'posix' and sys.platform == 'darwin':  # macOS
-                subprocess.run(['open', path])
-            else:  # Linux
-                subprocess.run(['xdg-open', path])
-        except Exception as e:
-            print(f"打开失败：{e}")
+        if os.name == 'nt':  # Windows
+            os.startfile(path)
+        elif os.name == 'posix' and sys.platform == 'darwin':  # macOS
+            subprocess.run(['open', path])
+        else:  # Linux
+            subprocess.run(['xdg-open', path])
     
     @abstractmethod
     def find_image(self):
@@ -108,23 +110,25 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
     def extractor_exec(self):
         super().extractor_exec()
 
-        print(f"执行语句：{' '.join(self.command)}")
-        
-        try:
-            result = subprocess.run(
-                ' '.join(self.command),
-                capture_output=True,
-                text=True,   
-                check=True      
-            )
-            print("命令输出：")
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"命令执行失败：{e.stderr}")
-        except FileNotFoundError:
-            print("错误：找不到该命令")
-        except Exception as e:
-            print(f"发生未知错误：{e}")
+        with open(self.log_file, 'a', encoding='utf-8') as logf:
+            logf.write("\n---------BEGIN---------\n" +
+                       f"{datetime.now()} " +
+                       f"执行命令：{' '.join(self.command)}\n")
+            try:
+                result = subprocess.run(
+                    ' '.join(self.command),
+                    capture_output=True,
+                    text=True,   
+                    check=True      
+                )
+                logf.write(f"执行成功：{result.stdout}{result.stderr}")
+            except subprocess.CalledProcessError as e:
+                logf.write(f"执行失败：{e.stderr}\n")
+            except FileNotFoundError:
+                logf.write("错误：找不到该命令\n")
+            except Exception as e:
+                logf.write(f"发生未知错误：{e}\n")
+            logf.write("\n--------- END ---------\n")
 
     def find_image(self):
         path = self.output_folder
@@ -146,7 +150,6 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
             if os.path.isfile(file_path) and filename.endswith(image_extensions):
                 image_paths.append(file_path)
 
-        print(image_paths)
         if image_paths:
             self.output_frame.show_image(image_paths)
         else:
@@ -226,29 +229,31 @@ class MULTI_EXTRACTOR(EXTRACTOR):
         )
 
         self.input_frame.file_frame.label.config(text="选择文件夹:")
-        N.add(self, text="多文件夹提取")
+        N.add(self, text="文件夹递归提取")
 
         # 改写命令行语句
     def extractor_exec(self):
         super().extractor_exec()
 
-        print(f"执行语句：{' '.join(self.command)}")
-
-        try:
-            result = subprocess.run(
-                ' '.join(self.command),
-                capture_output=True,
-                text=True,   
-                check=True      
-            )
-            print("命令输出：")
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"命令执行失败：{e.stderr}")
-        except FileNotFoundError:
-            print("错误：找不到该命令")
-        except Exception as e:
-            print(f"发生未知错误：{e}")
+        with open(self.log_file, 'a', encoding='utf-8') as logf:
+            logf.write("\n---------BEGIN---------\n" +
+                       f"{datetime.now()} " +
+                       "执行命令：{' '.join(self.command)}\n")
+            try:
+                result = subprocess.run(
+                    ' '.join(self.command),
+                    capture_output=True,
+                    text=True,   
+                    check=True      
+                )
+                logf.write(f"执行成功：{result.stdout}{result.stderr}")
+            except subprocess.CalledProcessError as e:
+                logf.write(f"执行失败：{e.stderr}\n")
+            except FileNotFoundError:
+                logf.write("错误：找不到该命令\n")
+            except Exception as e:
+                logf.write(f"发生未知错误：{e}\n")
+            logf.write("\n--------- END ---------\n")
 
     def find_image(self):
         path = self.output_folder
