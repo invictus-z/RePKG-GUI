@@ -55,7 +55,8 @@ class HELP(ttk.Frame):
                 [".\\RePKG", "version"],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             
             output = result.stderr.strip()

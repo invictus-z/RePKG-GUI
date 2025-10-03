@@ -2,6 +2,8 @@ from . import tk, ttk
 from . import FILE_FRAME, ARGS_FRAME
 from PIL import Image, ImageTk
 import os
+from . import filedialog
+import messagebox, shutil
 
 class INPUT_FRAME(ttk.LabelFrame):
     """ 输入框架 """
@@ -84,6 +86,7 @@ class INPUT_FRAME(ttk.LabelFrame):
                     self.error += " " + subtype + ":" + text
                 else:
                     self.error = subtype + ":" + text
+            # elif 兼容性
         elif type == "remove":
             if subtype == "WARNING":
                 self.warning = ""
@@ -118,12 +121,12 @@ class OUTPUT_FRAME(ttk.Frame):
 
         self.btn_show = ttk.Button(self, text="图片预览显示", command=callback_FindImage)
         self.btn_show.grid(
-            row=0, column=1,
+            row=0, column=3,
             sticky=tk.W,
         )
         self.btn_openfolder = ttk.Button(self, text="在文件夹中打开", command=callback_OpenFolder)
         self.btn_openfolder.grid(
-            row=0, column=0,
+            row=0, column=4,
             sticky=tk.W,
         )
     
@@ -138,7 +141,7 @@ class OUTPUT_FRAME(ttk.Frame):
     def create_images_widgets(self):
         frames = tk.Frame(self)
         frames.grid(
-            row=1, column=0, columnspan=3,
+            row=1, column=0, columnspan=5,
             sticky=tk.NSEW
         )
         frames.grid_columnconfigure(2, weight=1)
@@ -191,5 +194,30 @@ class OUTPUT_FRAME(ttk.Frame):
         self.namelabel.config(text=os.path.basename(self.images[self.n]))
         self.numlabel.config(text=f"第{self.n+1}张/共{self.images_num}张")
 
-    def save_image():
-        pass # 待实现
+    def save_image(self):
+        self.images[self.n]
+        file_extension = os.path.splitext(self.images[self.n])[1].lower()
+        
+        # 打开文件保存对话框
+        target_path = filedialog.asksaveasfilename(
+            defaultextension=file_extension,
+            filetypes=[
+                ("图片文件", f"*{file_extension}"),
+                ("所有文件", "*.*")
+            ],
+            initialfile=os.path.basename(self.images[self.n]),
+            title="选择图片保存位置"
+        )
+        
+        if target_path:
+            try:
+                shutil.copy2(self.images[self.n], target_path)
+                messagebox.showinfo(
+                    "成功", 
+                    f"图片已成功保存到：\n{target_path}"
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "保存失败", 
+                    f"保存图片时发生错误：\n{str(e)}"
+                )

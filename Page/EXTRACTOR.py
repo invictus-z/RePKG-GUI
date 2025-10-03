@@ -2,7 +2,7 @@ from . import tk, ttk
 from . import INPUT_FRAME, OUTPUT_FRAME
 
 from abc import abstractmethod
-import os, subprocess
+import os, subprocess, messagebox
 
 from datetime import datetime
 
@@ -119,7 +119,12 @@ class SINGLE_EXTRACTOR(EXTRACTOR):
                     ' '.join(self.command),
                     capture_output=True,
                     text=True,   
-                    check=True      
+                    check=True,
+                    creationflags=subprocess.CREATE_NO_WINDOW 
+                )
+                messagebox.showinfo(
+                    "成功", 
+                    f"命令执行成功，文件已提取到：\n{self.output_folder}"
                 )
                 logf.write(f"执行成功：{result.stdout}{result.stderr}")
             except subprocess.CalledProcessError as e:
@@ -244,7 +249,12 @@ class MULTI_EXTRACTOR(EXTRACTOR):
                     ' '.join(self.command),
                     capture_output=True,
                     text=True,   
-                    check=True      
+                    check=True,
+                    creationflags=subprocess.CREATE_NO_WINDOW   
+                )
+                messagebox.showinfo(
+                    "成功", 
+                    f"命令执行成功，文件已提取到：\n{self.output_folder}"
                 )
                 logf.write(f"执行成功：{result.stdout}{result.stderr}")
             except subprocess.CalledProcessError as e:
